@@ -17,7 +17,7 @@ Pour un bon déroulé du processus, il faut déposer le .jar avec un sous dossie
 
 ## Fonctionnement
 
-### Algorithme principale
+### Algorithme principal
 
 En premier lieu, le programme va récupérer dans une hashmap les clefs constituées du duo : nom de magasin et ID produit avec pour valeur la quantité de vente associé.
 Dans un second temps, Les fichiers de références associés sont parcourus pour récupérer le prix de chaque objet multiplié par la quantité déjà en mémoire pour obtenir le chiffre d’affaires effectué.
