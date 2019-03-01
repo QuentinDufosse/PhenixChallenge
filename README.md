@@ -11,9 +11,9 @@ L’application permet de traiter les fichiers de transaction et de référence 
 Pour tester le code, il y a deux solutions :
 
   - Récupérer le fichier .jar exécutable
-  - Récupérer le code au sein d'un IDE pour le langage Java. Puis l'exporter en tant que .jar exécutable
+  - Récupérer le code au sein d’un IDE pour le langage Java. Puis l’exporter en tant que .jar exécutable
 
-Pour un bon déroulé du processus, il faut déposer le .jar avec un sous dossier "data" qui contiendra les fichiers de transaction. Puis il faut déposer les fichiers de transaction et les fichiers de références des 7 derniers jours dans ce dossier.
+Pour un bon déroulé du processus, il faut déposer le .jar avec un sous dossier « data » qui contiendra les fichiers de transaction. Puis il faut déposer les fichiers de transaction et les fichiers de références des 7 derniers jours dans ce dossier.
 
 ## Fonctionnement
 
