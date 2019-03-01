@@ -29,8 +29,8 @@ Ensuite, la liste des magasins est récupéré, puis permet de filtrer la Hashma
 Les fichiers sont nommé tel que décrit dans le nom de l'énnoncé.
 Concernant les dates antèrieurs, le programme les écrits actuellement avec le même format que le fichier du jour.
 
-du jour : top_100_ca_GLOBAL_20190301.data
-de la veille : top_100_ca_GLOBAL_20190228.data
+date du jour : top_100_ca_GLOBAL_20190301.data
+date de la veille : top_100_ca_GLOBAL_20190228.data
 (A clarifier si -J7 correspond à la date avec 7 jours en moins ou si l'on effectué l'opération comme dans le code actuellement.)
 
 ### Classe
