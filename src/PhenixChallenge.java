@@ -5,10 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -18,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class PhénixChallenge {
+public class PhenixChallenge {
 	
 	// Colonne value in the files
 	private final static int txId = 0;
@@ -29,7 +27,8 @@ public class PhénixChallenge {
 	private final static int produitRef = 0;
 	private final static int prix  = 1;
 	// path to files
-	private final static String path = "C:/phenix/";
+	private final static String path = ".\\data\\";
+	private final static String logPath = ".\\";
 	
 	public static void main(String[] args) throws IOException {
 		// Variables
@@ -45,7 +44,6 @@ public class PhénixChallenge {
 		for(i = 1; i < 7; i++) {
 			dateJour.setDate(dateJour.getDate() - 1);
 			dates.add(simpleDateFormat.format(dateJour));
-			System.out.println(dates.get(i));
 		}
 		
 		// for each date, we get the data
@@ -79,7 +77,7 @@ public class PhénixChallenge {
 				List<Vente> ventes = new ArrayList();
 				
 				for (String magasin : listeMagasins) {
-					ventes  = RécupérationMagasinUnique(VenteParQuantite, magasin);
+					ventes  = GetUniqueShop(VenteParQuantite, magasin);
 					WriteHundredMost(ventes, "top_100_ventes_" + magasin + "_" + date + ".data");
 					WriteHundredExpensive(ventes, "top_100_ca_" + magasin + "_" + date + ".data");
 				}
@@ -99,18 +97,21 @@ public class PhénixChallenge {
 		HashMap<String, Vente> listeVente = new HashMap<String, Vente>();
 		String[] decoupe;
 		String key;
+		String ligne;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(path));
 			// Get the object IDs
-			while(br.readLine() != null) {
-				decoupe = br.readLine().toString().split("\\|");
-				key = decoupe[magasin] + "|" + decoupe[produitTransac];
+			while((ligne = br.readLine()) != null) {
+				decoupe = ligne.split("\\|");
 				// check if nothing is null, and put values in the hashmap
 				if(decoupe[magasin] != null && decoupe[produitTransac] != null && decoupe[qte] != null) {
+					key = decoupe[magasin] + "|" + decoupe[produitTransac];
 					if(!listeVente.containsKey(key)) {
-						listeVente.put(key, new Vente(decoupe[magasin], decoupe[produitTransac], Integer.parseInt(decoupe[qte]), (double) 0));
+						listeVente.put(key, new Vente(decoupe[magasin], decoupe[produitTransac], 
+								Integer.parseInt(decoupe[qte]), (double) 0));
 					} else {
-						listeVente.put(key, new Vente(decoupe[magasin], decoupe[produitTransac], listeVente.get(key).getQuantite() + Integer.parseInt(decoupe[qte]),(double) 0));
+						listeVente.put(key, new Vente(decoupe[magasin], decoupe[produitTransac], 
+								listeVente.get(key).getQuantite() + Integer.parseInt(decoupe[qte]),(double) 0));
 					};
 				}
 			}
@@ -130,7 +131,8 @@ public class PhénixChallenge {
 	 * @throws NumberFormatException
 	 * @throws IOException
 	 */
-	public static HashMap<String, Vente> prixReader(String path, HashMap<String, Vente> listeVente, String date) throws NumberFormatException, IOException {
+	public static HashMap<String, Vente> prixReader(String path, HashMap<String, Vente> listeVente, String date) 
+			throws NumberFormatException, IOException {
 		String[] decoupe;
 		String key;
 		String ligne;
@@ -148,11 +150,11 @@ public class PhénixChallenge {
 					if(decoupe[produitRef] != null && decoupe[prix] != null)
 					{
 						if (v.getProduit().equals(decoupe[produitRef])) {
-							listeVente.put(key, new Vente(v.getMagasin(), v.getProduit(), v.getQuantite(), v.getQuantite() * Double.parseDouble(decoupe[prix])));
+							listeVente.put(key, new Vente(v.getMagasin(), 
+									v.getProduit(), v.getQuantite(), v.getQuantite() * Double.parseDouble(decoupe[prix])));
 						}
 					}
 				}
-				br.close();
 			} else {
 				// If the file doesn't exist for the date and shop
 				System.out.println("Fichier de référence non trouvé");
@@ -169,7 +171,7 @@ public class PhénixChallenge {
 	public static void WriteHundredMost(List<Vente> Ventes, String filename)
 	{
 		PrintWriter writer;
-		int i = 0;
+		int i = 0, top = 100;
 		Vente v;
 		
 		// Sort of the List
@@ -179,7 +181,10 @@ public class PhénixChallenge {
 		// Write 100 first in the designed file
 		try {
 			writer = new PrintWriter(path + filename, "UTF-8");
-			while(i < 100) {
+			if ( Ventes.size() < 100) {
+				top = Ventes.size();
+			}
+			while(i < top) {
 				v = Ventes.get(i);
 				writer.println(v.getMagasin() + " : " + v.getProduit() + " : " + v.getQuantite());
 				i ++;
@@ -199,7 +204,7 @@ public class PhénixChallenge {
 	public static void WriteHundredExpensive(List<Vente> Ventes, String filename)
 	{
 		PrintWriter writer;
-		int i = 0;
+		int i = 0, top = 100;;
 		Vente v;
 		
 		// Tri de la liste des ventes
@@ -210,7 +215,10 @@ public class PhénixChallenge {
 		try {
 			writer = new PrintWriter(path + filename, "UTF-8");
 			writer.println("Liste des meilleures ventes : ");
-			while(i < 100) {
+			if ( Ventes.size() < 100) {
+				top = Ventes.size();
+			}
+			while(i < top) {
 				v = Ventes.get(i);
 				writer.println(v.getMagasin() + " : " + v.getProduit() + " : " + v.getPrixTotal());
 				i ++;
@@ -228,7 +236,7 @@ public class PhénixChallenge {
 	 * @param magasin
 	 * @return
 	 */
-	public static List<Vente> RécupérationMagasinUnique (List<Vente> Ventes, String magasin)
+	public static List<Vente> GetUniqueShop (List<Vente> Ventes, String magasin)
 	{
 		List<Vente> VenteMagasin = Ventes.stream()
 		    .filter(p -> p.getMagasin().equals(magasin)).collect(Collectors.toList());
