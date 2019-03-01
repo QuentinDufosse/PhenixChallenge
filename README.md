@@ -49,7 +49,7 @@ Actuellement, le fonctionnement avec une Hashmap ne permet pas de répondre à l
 
 ### tests automatisés
 
-Des testes automatique pourrait être ajouté pour tester les fonctions de l'application
+Des tests automatiques pourrait être ajouté pour tester les fonctions de l'application
 
 ## Compatibilité
 
