@@ -1,7 +1,9 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -83,9 +85,11 @@ public class PhenixChallenge {
 				}
 			}
 		}
-		PrintWriter writer = new PrintWriter(logPath, "UTF-8");
-		writer.println("Fin du processus!");
-        writer.close();
+		FileWriter fw = new FileWriter(logPath, true);
+		BufferedWriter bw = new BufferedWriter(fw);
+		bw.newLine();
+        bw.write("Fin du processus!");
+        bw.close();
     }
 	
 	/**
@@ -120,9 +124,11 @@ public class PhenixChallenge {
 			br.close();
 			return listeVente;
 		} catch (FileNotFoundException e) {
-			PrintWriter writer = new PrintWriter(logPath, "UTF-8");
-			writer.println(e.getMessage());
-	        writer.close();
+			FileWriter fw = new FileWriter(logPath, true);
+			BufferedWriter bw = new BufferedWriter(fw);
+	        bw.write(e.getMessage());
+	        bw.newLine();
+	        bw.close();
 		}
 		return null;
 	}
@@ -161,9 +167,11 @@ public class PhenixChallenge {
 				}
 			} else {
 				// If the file doesn't exist for the date and shop
-				PrintWriter writer = new PrintWriter(logPath, "UTF-8");
-				writer.println("Fichier de référence non trouvé : " + f.getName());
-		        writer.close();
+		        FileWriter fw = new FileWriter(logPath, true);
+				BufferedWriter bw = new BufferedWriter(fw);
+		        bw.write("Fichier de référence non trouvé : " + f.getName());
+		        bw.newLine();
+		        bw.close();
 			}
 		}
 		return listeVente;
@@ -173,10 +181,9 @@ public class PhenixChallenge {
 	 * write 100 First line of a list sorted by quantity
 	 * @param Ventes
 	 * @param filename
-	 * @throws UnsupportedEncodingException 
-	 * @throws FileNotFoundException 
+	 * @throws IOException 
 	 */
-	public static void WriteHundredMost(List<Vente> Ventes, String filename) throws FileNotFoundException, UnsupportedEncodingException
+	public static void WriteHundredMost(List<Vente> Ventes, String filename) throws IOException
 	{
 		PrintWriter writer;
 		int i = 0, top = 100;
@@ -200,9 +207,11 @@ public class PhenixChallenge {
 			writer.close();
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			// If it's not possible to write in the file :
-			PrintWriter writerExeption = new PrintWriter(logPath, "UTF-8");
-			writerExeption.println(e.getMessage());
-			writerExeption.close();
+			FileWriter fw = new FileWriter(logPath, true);
+			BufferedWriter bw = new BufferedWriter(fw);
+	        bw.write(e.getMessage());
+	        bw.newLine();
+	        bw.close();
 		}
 	}
 	
@@ -210,10 +219,9 @@ public class PhenixChallenge {
 	 * write 100 First line of a list sorted by Total price
 	 * @param Ventes
 	 * @param filename
-	 * @throws UnsupportedEncodingException 
-	 * @throws FileNotFoundException 
+	 * @throws IOException 
 	 */
-	public static void WriteHundredExpensive(List<Vente> Ventes, String filename) throws FileNotFoundException, UnsupportedEncodingException
+	public static void WriteHundredExpensive(List<Vente> Ventes, String filename) throws IOException
 	{
 		PrintWriter writer;
 		int i = 0, top = 100;;
@@ -237,9 +245,11 @@ public class PhenixChallenge {
 			writer.close();
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			// Erreur lors de l'écriture dans le fichier cible.
-			PrintWriter writerExeption = new PrintWriter(logPath, "UTF-8");
-			writerExeption.println(e.getMessage());
-			writerExeption.close();
+			FileWriter fw = new FileWriter(logPath, true);
+			BufferedWriter bw = new BufferedWriter(fw);
+	        bw.write(e.getMessage());
+	        bw.newLine();
+	        bw.close();
 		}
 	}
 	
