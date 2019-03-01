@@ -47,10 +47,10 @@ La classe vente a été créé pour avoir contenir tous les aspects que l’on d
 
 Actuellement, le fonctionnement avec une Hashmap ne permet pas de répondre à la contrainte de RAM. Un grand nombre d’enregistrement entraine donc aussi un quantité de donnée en mémoire importante. Il faudrait donc modifier le code pour effectuer le traitement en passant les actions depuis le fichier par tranche de 10 000 lignes.
 
-### Logs
+### tests automatisés
 
-Actuellement, les logs ne sont pas déposé dans un fichier associé. Il faudrait soit passer par un système de log propre à java, ou écrire les logs dans un fichier à l'emplacement du fichier java.
-  
+Des testes automatique pourrait être ajouté pour tester les fonctions de l'application
+
 ## Compatibilité
 
 jdk-11.0.2
