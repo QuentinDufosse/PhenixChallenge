@@ -28,7 +28,7 @@ public class PhenixChallenge {
 	private final static int prix  = 1;
 	// path to files
 	private final static String path = ".\\data\\";
-	private final static String logPath = ".\\";
+	private final static String logPath = ".\\phenix.log";
 	
 	public static void main(String[] args) throws IOException {
 		// Variables
@@ -83,7 +83,9 @@ public class PhenixChallenge {
 				}
 			}
 		}
-        System.out.println("Fin du processus!");
+		PrintWriter writer = new PrintWriter(logPath, "UTF-8");
+		writer.println("Fin du processus!");
+        writer.close();
     }
 	
 	/**
@@ -118,7 +120,9 @@ public class PhenixChallenge {
 			br.close();
 			return listeVente;
 		} catch (FileNotFoundException e) {
-		System.out.println("Pas de fichier à cet emplacement");
+			PrintWriter writer = new PrintWriter(logPath, "UTF-8");
+			writer.println(e.getMessage());
+	        writer.close();
 		}
 		return null;
 	}
@@ -157,7 +161,9 @@ public class PhenixChallenge {
 				}
 			} else {
 				// If the file doesn't exist for the date and shop
-				System.out.println("Fichier de référence non trouvé");
+				PrintWriter writer = new PrintWriter(logPath, "UTF-8");
+				writer.println("Fichier de référence non trouvé : " + f.getName());
+		        writer.close();
 			}
 		}
 		return listeVente;
@@ -167,8 +173,10 @@ public class PhenixChallenge {
 	 * write 100 First line of a list sorted by quantity
 	 * @param Ventes
 	 * @param filename
+	 * @throws UnsupportedEncodingException 
+	 * @throws FileNotFoundException 
 	 */
-	public static void WriteHundredMost(List<Vente> Ventes, String filename)
+	public static void WriteHundredMost(List<Vente> Ventes, String filename) throws FileNotFoundException, UnsupportedEncodingException
 	{
 		PrintWriter writer;
 		int i = 0, top = 100;
@@ -192,7 +200,9 @@ public class PhenixChallenge {
 			writer.close();
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			// If it's not possible to write in the file :
-			System.out.println("Erreur lors de l'écriture dans le fichier");
+			PrintWriter writerExeption = new PrintWriter(logPath, "UTF-8");
+			writerExeption.println(e.getMessage());
+			writerExeption.close();
 		}
 	}
 	
@@ -200,8 +210,10 @@ public class PhenixChallenge {
 	 * write 100 First line of a list sorted by Total price
 	 * @param Ventes
 	 * @param filename
+	 * @throws UnsupportedEncodingException 
+	 * @throws FileNotFoundException 
 	 */
-	public static void WriteHundredExpensive(List<Vente> Ventes, String filename)
+	public static void WriteHundredExpensive(List<Vente> Ventes, String filename) throws FileNotFoundException, UnsupportedEncodingException
 	{
 		PrintWriter writer;
 		int i = 0, top = 100;;
@@ -214,7 +226,6 @@ public class PhenixChallenge {
 		// écriture des 100 premières lignes dans le fichier cible.
 		try {
 			writer = new PrintWriter(path + filename, "UTF-8");
-			writer.println("Liste des meilleures ventes : ");
 			if ( Ventes.size() < 100) {
 				top = Ventes.size();
 			}
@@ -226,7 +237,9 @@ public class PhenixChallenge {
 			writer.close();
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			// Erreur lors de l'écriture dans le fichier cible.
-			System.out.println("Erreur lors de l'écriture dans le fichier");
+			PrintWriter writerExeption = new PrintWriter(logPath, "UTF-8");
+			writerExeption.println(e.getMessage());
+			writerExeption.close();
 		}
 	}
 	
