@@ -13,7 +13,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PhénixChallenge {
@@ -26,7 +28,7 @@ public class PhénixChallenge {
 	private final static int qte = 4;
 	private final static int produitRef = 0;
 	private final static int prix  = 1;
-	private final static String path = "C:/Users/kordo/Desktop/test carrefour/phenix-challenge-master/phenix-challenge-master/data/";
+	private final static String path = "C:/phenix/";
 	
 	public static void main(String[] args) throws IOException {
 		// déclaration des variables
@@ -56,22 +58,30 @@ public class PhénixChallenge {
 					
 				// Tri décroissant du nombre de ventes
 				List<Vente> VenteParQuantite = new ArrayList<>(listeVente.values());
-		
-				Collections.sort(VenteParQuantite, Comparator.comparing(Vente::getQuantite));
-				Collections.reverse(VenteParQuantite);
-				
-				WriteTenMost(VenteParQuantite, "top_100_ventes_GLOBAL_" + date + ".data");
-				
-				// Filtre et tri pour chacun des magasins
-				
+				WriteHundredMost(VenteParQuantite, "top_100_ventes_GLOBAL_" + date + ".data");
 				
 				// Tri décroissant du prix total de ventes
 				List<Vente> VenteParPrix = new ArrayList<>(listeVente.values());
-		
-				Collections.sort(VenteParPrix, Comparator.comparingDouble(Vente::getPrixTotal));
-				Collections.reverse(VenteParPrix);
+				WriteHundredExpensive(VenteParPrix, "top_100_ca_GLOBAL_" + date + ".data");
 				
-				WriteTenExpensive(VenteParPrix, "top_100_ca_GLOBAL_" + date + ".data");
+				// Exécution unitaire pour chaque magasin
+				List<String> magasins = new ArrayList<String>();
+				
+				// récupération d'une liste des magasins
+				for (String mapKey : listeVente.keySet()) { 
+					magasins.add(mapKey.split("\\|")[0]);
+				}
+				// suppression des doublons
+				Set<String> listeMagasins = new HashSet<String>(magasins);
+				
+				// Lancement des calculs pour chacun des magasins
+				List<Vente> ventes = new ArrayList();
+				
+				for (String magasin : listeMagasins) {
+					ventes  = RécupérationMagasinUnique(VenteParQuantite, magasin);
+					WriteHundredMost(ventes, "top_100_ventes_" + magasin + "_" + date + ".data");
+					WriteHundredExpensive(ventes, "top_100_ca_" + magasin + "_" + date + ".data");
+				}
 			}
 		}
         System.out.println("Fin du processus!");
@@ -123,14 +133,17 @@ public class PhénixChallenge {
 		String key;
 		String ligne;
 		
+		// Calcul du prix total des ventes
 		List<Vente> VenteParPrix = new ArrayList<>(listeVente.values());
 		for (Vente v : VenteParPrix) {
+			// Vérification de l'éxistence du fichier cible
 			File f =  new File(path + "/reference_prod-" + v.getMagasin() + "_" + date +".data");
 			if (f.exists()) {
 				BufferedReader br = new BufferedReader(new FileReader(f.getPath()));
 				while((ligne = br.readLine()) != null) {
 					decoupe = ligne.toString().split("\\|");
 					key = v.getMagasin() + "|" + v.getProduit();
+					// Mise à jour du prix total en multipliant le prix par la quantité
 					if(decoupe[produitRef] != null && decoupe[prix] != null)
 					{
 						if (v.getProduit().equals(decoupe[produitRef])) {
@@ -140,6 +153,7 @@ public class PhénixChallenge {
 				}
 				br.close();
 			} else {
+				// Si le fichier contenant les prix n'existe pas à la date ou pour le magasin :
 				System.out.println("Fichier de référence non trouvé");
 			}
 		}
@@ -151,22 +165,28 @@ public class PhénixChallenge {
 	 * @param Ventes
 	 * @param filename
 	 */
-	public static void WriteTenMost(List<Vente> Ventes, String filename)
+	public static void WriteHundredMost(List<Vente> Ventes, String filename)
 	{
 		PrintWriter writer;
 		int i = 0;
 		Vente v;
+		
+		// Tri de la liste des ventes
+		Collections.sort(Ventes, Comparator.comparing(Vente::getQuantite));
+		Collections.reverse(Ventes);
+		
+		// écriture des 100 premières lignes dans le fichier cible.
 		try {
 			writer = new PrintWriter(path + filename, "UTF-8");
 			writer.println("Liste des meilleures ventes : ");
-			while(i < 10) {
+			while(i < 100) {
 				v = Ventes.get(i);
 				writer.println(v.getMagasin() + " : " + v.getProduit() + " : " + v.getQuantite());
 				i ++;
 			}
 			writer.close();
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			// Erreur lors de l'écriture dans le fichier cible.
 			System.out.println("Erreur lors de l'écriture dans le fichier");
 		}
 	}
@@ -176,23 +196,42 @@ public class PhénixChallenge {
 	 * @param Ventes
 	 * @param filename
 	 */
-	public static void WriteTenExpensive(List<Vente> Ventes, String filename)
+	public static void WriteHundredExpensive(List<Vente> Ventes, String filename)
 	{
 		PrintWriter writer;
 		int i = 0;
 		Vente v;
+		
+		// Tri de la liste des ventes
+		Collections.sort(Ventes, Comparator.comparingDouble(Vente::getPrixTotal));
+		Collections.reverse(Ventes);
+		
+		// écriture des 100 premières lignes dans le fichier cible.
 		try {
 			writer = new PrintWriter(path + filename, "UTF-8");
 			writer.println("Liste des meilleures ventes : ");
-			while(i < 10) {
+			while(i < 100) {
 				v = Ventes.get(i);
 				writer.println(v.getMagasin() + " : " + v.getProduit() + " : " + v.getPrixTotal());
 				i ++;
 			}
 			writer.close();
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			// Erreur lors de l'écriture dans le fichier cible.
 			System.out.println("Erreur lors de l'écriture dans le fichier");
 		}
+	}
+	
+	/**
+	 * Retour d'une liste de vente pour un magasin
+	 * @param Ventes
+	 * @param magasin
+	 * @return
+	 */
+	public static List<Vente> RécupérationMagasinUnique (List<Vente> Ventes, String magasin)
+	{
+		List<Vente> VenteMagasin = Ventes.stream()
+		    .filter(p -> p.getMagasin().equals(magasin)).collect(Collectors.toList());
+		return VenteMagasin;
 	}
 }
