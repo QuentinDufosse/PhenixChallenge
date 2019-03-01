@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class PhénixChallenge {
 	
-	// déclaration du placement des colonnes des fichiers
+	// Colonne value in the files
 	private final static int txId = 0;
 	private final static int datetime = 1;
 	private final static int magasin = 2;
@@ -28,15 +28,16 @@ public class PhénixChallenge {
 	private final static int qte = 4;
 	private final static int produitRef = 0;
 	private final static int prix  = 1;
+	// path to files
 	private final static String path = "C:/phenix/";
 	
 	public static void main(String[] args) throws IOException {
-		// déclaration des variables
+		// Variables
 		HashMap<String, Vente> listeVente = new HashMap<String, Vente>();
 		ArrayList<String> dates = new ArrayList<String>();
 		int i =0;
 
-		// Récupération des 7 derniers jours dans une arraylist
+		// get 7 last day as an arraylist
 		Date dateJour = new Date();
 		String pattern = "yyyyMMdd";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -47,34 +48,34 @@ public class PhénixChallenge {
 			System.out.println(dates.get(i));
 		}
 		
-		// parcour des dates et récupérations des dernières données.
+		// for each date, we get the data
 		for(String date : dates) {
-			//Récupération des ventes totales
+			// Get the sales number
 			listeVente = transactionReader(path + "transactions_" + date + ".data");
 			
 			if (listeVente != null) {
-				// Récupération du chiffre d'affaire de chaque objet
+				// Get the sales total price
 				listeVente = prixReader(path, listeVente, date);
 					
-				// Tri décroissant du nombre de ventes
+				// Sorting the sales quantity and writing the top hundred in a file
 				List<Vente> VenteParQuantite = new ArrayList<>(listeVente.values());
 				WriteHundredMost(VenteParQuantite, "top_100_ventes_GLOBAL_" + date + ".data");
 				
-				// Tri décroissant du prix total de ventes
+				// Sorting the sales total price and writing the top hundred in a file
 				List<Vente> VenteParPrix = new ArrayList<>(listeVente.values());
 				WriteHundredExpensive(VenteParPrix, "top_100_ca_GLOBAL_" + date + ".data");
 				
-				// Exécution unitaire pour chaque magasin
+				// Get those value for each shop
 				List<String> magasins = new ArrayList<String>();
 				
-				// récupération d'une liste des magasins
+				// List of shop
 				for (String mapKey : listeVente.keySet()) { 
 					magasins.add(mapKey.split("\\|")[0]);
 				}
-				// suppression des doublons
+				// unique value of them
 				Set<String> listeMagasins = new HashSet<String>(magasins);
 				
-				// Lancement des calculs pour chacun des magasins
+				// Get the top hundred of sales total price and quantity for each
 				List<Vente> ventes = new ArrayList();
 				
 				for (String magasin : listeMagasins) {
@@ -100,10 +101,11 @@ public class PhénixChallenge {
 		String key;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(path));
-			// Récupération des IDs des objets achetés
+			// Get the object IDs
 			while(br.readLine() != null) {
 				decoupe = br.readLine().toString().split("\\|");
 				key = decoupe[magasin] + "|" + decoupe[produitTransac];
+				// check if nothing is null, and put values in the hashmap
 				if(decoupe[magasin] != null && decoupe[produitTransac] != null && decoupe[qte] != null) {
 					if(!listeVente.containsKey(key)) {
 						listeVente.put(key, new Vente(decoupe[magasin], decoupe[produitTransac], Integer.parseInt(decoupe[qte]), (double) 0));
@@ -121,7 +123,7 @@ public class PhénixChallenge {
 	}
 	
 	/**
-	 * 
+	 * Calcul for eache selling in the hashmap the total price
 	 * @param path
 	 * @param listeVente
 	 * @return
@@ -133,17 +135,16 @@ public class PhénixChallenge {
 		String key;
 		String ligne;
 		
-		// Calcul du prix total des ventes
 		List<Vente> VenteParPrix = new ArrayList<>(listeVente.values());
 		for (Vente v : VenteParPrix) {
-			// Vérification de l'éxistence du fichier cible
+			// Look if the file exist
 			File f =  new File(path + "/reference_prod-" + v.getMagasin() + "_" + date +".data");
 			if (f.exists()) {
 				BufferedReader br = new BufferedReader(new FileReader(f.getPath()));
 				while((ligne = br.readLine()) != null) {
 					decoupe = ligne.toString().split("\\|");
 					key = v.getMagasin() + "|" + v.getProduit();
-					// Mise à jour du prix total en multipliant le prix par la quantité
+					// Calcul total price based on what is read in the price file
 					if(decoupe[produitRef] != null && decoupe[prix] != null)
 					{
 						if (v.getProduit().equals(decoupe[produitRef])) {
@@ -153,7 +154,7 @@ public class PhénixChallenge {
 				}
 				br.close();
 			} else {
-				// Si le fichier contenant les prix n'existe pas à la date ou pour le magasin :
+				// If the file doesn't exist for the date and shop
 				System.out.println("Fichier de référence non trouvé");
 			}
 		}
@@ -161,7 +162,7 @@ public class PhénixChallenge {
 	}
 	
 	/**
-	 * écriture des 10 premières lignes de la collection donné
+	 * write 100 First line of a list sorted by quantity
 	 * @param Ventes
 	 * @param filename
 	 */
@@ -171,14 +172,13 @@ public class PhénixChallenge {
 		int i = 0;
 		Vente v;
 		
-		// Tri de la liste des ventes
+		// Sort of the List
 		Collections.sort(Ventes, Comparator.comparing(Vente::getQuantite));
 		Collections.reverse(Ventes);
 		
-		// écriture des 100 premières lignes dans le fichier cible.
+		// Write 100 first in the designed file
 		try {
 			writer = new PrintWriter(path + filename, "UTF-8");
-			writer.println("Liste des meilleures ventes : ");
 			while(i < 100) {
 				v = Ventes.get(i);
 				writer.println(v.getMagasin() + " : " + v.getProduit() + " : " + v.getQuantite());
@@ -186,13 +186,13 @@ public class PhénixChallenge {
 			}
 			writer.close();
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			// Erreur lors de l'écriture dans le fichier cible.
+			// If it's not possible to write in the file :
 			System.out.println("Erreur lors de l'écriture dans le fichier");
 		}
 	}
 	
 	/**
-	 * écriture des 10 premières lignes de la collection donné
+	 * write 100 First line of a list sorted by Total price
 	 * @param Ventes
 	 * @param filename
 	 */
@@ -223,7 +223,7 @@ public class PhénixChallenge {
 	}
 	
 	/**
-	 * Retour d'une liste de vente pour un magasin
+	 * Get a sale hashmap with only the sales of one shop
 	 * @param Ventes
 	 * @param magasin
 	 * @return
