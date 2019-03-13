@@ -93,7 +93,7 @@ public class PhenixChallenge {
     }
 	
 	/**
-	 * Lecture des fichiers de transaction pour récupérer la quantité de chaque produit vendu dans les magasins
+	 * Lecture des fichiers de transaction pour recuperer la quantite de chaque produit vendu dans les magasins
 	 * @param path
 	 * @return
 	 * @throws NumberFormatException
@@ -169,7 +169,7 @@ public class PhenixChallenge {
 				// If the file doesn't exist for the date and shop
 		        FileWriter fw = new FileWriter(logPath, true);
 				BufferedWriter bw = new BufferedWriter(fw);
-		        bw.write("Fichier de référence non trouvé : " + f.getName());
+		        bw.write("Fichier de reference non trouve : " + f.getName());
 		        bw.newLine();
 		        bw.close();
 			}
@@ -231,7 +231,7 @@ public class PhenixChallenge {
 		Collections.sort(Ventes, Comparator.comparingDouble(Vente::getPrixTotal));
 		Collections.reverse(Ventes);
 		
-		// écriture des 100 premières lignes dans le fichier cible.
+		// ecriture des 100 premieres lignes dans le fichier cible.
 		try {
 			writer = new PrintWriter(path + filename, "UTF-8");
 			if ( Ventes.size() < 100) {
@@ -244,7 +244,7 @@ public class PhenixChallenge {
 			}
 			writer.close();
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			// Erreur lors de l'écriture dans le fichier cible.
+			// Erreur lors de l'ecriture dans le fichier cible.
 			FileWriter fw = new FileWriter(logPath, true);
 			BufferedWriter bw = new BufferedWriter(fw);
 	        bw.write(e.getMessage());
